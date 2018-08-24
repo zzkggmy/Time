@@ -8,7 +8,8 @@ import com.kai.time.R
 
 var options = RequestOptions()
         .centerCrop()
-        .placeholder(R.drawable.ic_fail_img)
-        .error(R.drawable.ic_fail_img)
+        .override(getScreeWidth(), 200)
+        .placeholder(R.drawable.ic_no_video)
+        .error(R.drawable.ic_no_video)
         .priority(Priority.HIGH)
         .diskCacheStrategy(DiskCacheStrategy.NONE)

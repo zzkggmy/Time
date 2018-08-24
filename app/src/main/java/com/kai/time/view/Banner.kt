@@ -7,6 +7,7 @@ import android.os.Message
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -18,34 +19,35 @@ import com.kai.time.R
 import com.kai.time.utils.findColor
 
 
-class Banner : RelativeLayout {
+class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, attr) {
 
+
+    private var imageHeight = 0
     private var currentId = 1
     private var cyclerDuration = 2000L
     private var indicatorBackground = R.drawable.bg_grey_dots_shape
     private var selectIndicatorBackground = R.drawable.bg_blue_default_dots_shape
     private var size = 0
-    private val WHAT_AUTO_DISPLAY = 0
-    private var i = 0
+    private val AUTO_DISPLAY = 0
     private val views: ArrayList<View> = ArrayList()
     private lateinit var vp: ViewPager
     private lateinit var dotsLinearLayout: LinearLayout
     private lateinit var relativeLayout: RelativeLayout
     private lateinit var title: TextView
-    private lateinit var mOnBannerItemClickListener: OnBannerItemClickListener
+    private var mOnBannerItemClickListener: OnBannerItemClickListener? = null
 
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attr: AttributeSet) : super(context, attr)
-    constructor(context: Context, attr: AttributeSet, defStyleAttr: Int) : super(context, attr, defStyleAttr)
+    init {
+
+    }
 
     private val mHandler = @SuppressLint("HandlerLeak")
     object : Handler() {
         override fun handleMessage(msg: Message?) {
             super.handleMessage(msg)
             when (msg!!.what) {
-                WHAT_AUTO_DISPLAY -> {
+                AUTO_DISPLAY -> {
                     vp.setCurrentItem(vp.currentItem + currentId, true)
-                    sendEmptyMessageDelayed(WHAT_AUTO_DISPLAY, cyclerDuration)
+                    sendEmptyMessageDelayed(AUTO_DISPLAY, cyclerDuration)
                 }
             }
         }
@@ -53,9 +55,9 @@ class Banner : RelativeLayout {
 
     fun setAutoDisplay(auto: Boolean) {
         if (auto) {
-            mHandler.sendEmptyMessageDelayed(WHAT_AUTO_DISPLAY, cyclerDuration)
+            mHandler.sendEmptyMessageDelayed(AUTO_DISPLAY, cyclerDuration)
         } else {
-            mHandler.removeMessages(WHAT_AUTO_DISPLAY)
+            mHandler.removeMessages(AUTO_DISPLAY)
         }
     }
 
@@ -64,7 +66,7 @@ class Banner : RelativeLayout {
     }
 
     fun stopAutoDisplay() {
-        mHandler.removeMessages(WHAT_AUTO_DISPLAY)
+        mHandler.removeMessages(AUTO_DISPLAY)
     }
 
     fun setIndicatorStyle(background: Int) {
@@ -83,10 +85,10 @@ class Banner : RelativeLayout {
         titles.add(titles[titles.size - 1])
         val dotsList: ArrayList<TextView> = ArrayList()
         relativeLayout = RelativeLayout(context)
-        val titleLinearLayout: LinearLayout = LinearLayout(context)
+        val titleLinearLayout = LinearLayout(context)
         title = TextView(context)
         title.setTextColor(findColor(textColor))
-        title.setTextSize(textSize)
+        title.textSize = textSize
         val dotsParams = LinearLayout.LayoutParams(20, 20)
         dotsParams.setMargins(0, 0, 40, 0)
 
@@ -122,16 +124,6 @@ class Banner : RelativeLayout {
     private fun moveIndicatorWithTitle(titles: ArrayList<String>, dotsList: ArrayList<TextView>) {
         vp.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
-                when (state) {
-                    0 -> {
-                    }
-                    1 -> {
-
-                    }
-                    2 -> {
-
-                    }
-                }
             }
 
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -140,7 +132,7 @@ class Banner : RelativeLayout {
                 if (position == dotsList.size - 1) {
                     vp.currentItem = 0
                 }
-                dotsList.forEachIndexed { index, dotsSelectEntity ->
+                dotsList.forEachIndexed { index, _ ->
                     if (index == position) {
                         dotsList[index].setBackgroundResource(selectIndicatorBackground)
                     } else {
@@ -196,7 +188,7 @@ class Banner : RelativeLayout {
                 if (dotsList.size - 1 == position) {
                     vp.currentItem = 0
                 }
-                dotsList.forEachIndexed { index, dotsSelectEntity ->
+                dotsList.forEachIndexed { index, _ ->
                     if (index == position) {
                         dotsList[index].setBackgroundResource(selectIndicatorBackground)
                     } else {
@@ -230,23 +222,23 @@ class Banner : RelativeLayout {
         size = urls.size + 1
         urls.add(urls[urls.size - 1])
         vp = ViewPager(context)
-
         for (i in 0 until urls.size) {
-            views.add(frameLayout(urls[i],i))
+            views.add(frameLayout(urls[i], i))
         }
         val bannerAdapter = BannerAdapter(views)
         addView(vp)
         vp.adapter = bannerAdapter
         setIndicator()
+        setSliderTransformDuration()
     }
 
-    private fun frameLayout(url: String,position: Int): FrameLayout {
+    private fun frameLayout(url: String, position: Int): FrameLayout {
         val frameLayout = FrameLayout(context)
         val layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
         layoutParams.setMargins(0, 0, 0, 0)
         frameLayout.layoutParams = layoutParams
         val iv = ImageView(context)
-        val ivParams = ViewGroup.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+        val ivParams = ViewGroup.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
         iv.scaleType = ImageView.ScaleType.CENTER_CROP
 
         Glide.with(context)
@@ -255,15 +247,29 @@ class Banner : RelativeLayout {
                 .apply {
                     RequestOptions()
                             .centerCrop()
+                            .placeholder(R.drawable.ic_no_video)
+                            .error(R.drawable.ic_no_video)
                             .priority(Priority.HIGH)
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                 }
                 .into(iv)
         frameLayout.addView(iv, ivParams)
         frameLayout.setOnClickListener {
-            mOnBannerItemClickListener.onItemClick(iv,position)
+            mOnBannerItemClickListener?.onItemClick(iv, position)
         }
         return frameLayout
+    }
+
+    private fun setSliderTransformDuration() {
+        try {
+            val mScroller = ViewPager::class.java.getDeclaredField("mScroller")
+            mScroller.isAccessible = true
+            val fixedSpeedScroller = FixedSpeedScroller(vp.context)
+            mScroller.set(vp, fixedSpeedScroller)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
 
@@ -289,6 +295,31 @@ class Banner : RelativeLayout {
         override fun getCount() = views.size
 
         override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {}
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        when (ev.action) {
+            MotionEvent.ACTION_DOWN -> stopAutoDisplay()
+            MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> setAutoDisplay(true)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    inner class FixedSpeedScroller(context: Context) : Scroller(context) {
+
+        private var mDuration = cyclerDuration.toInt()
+
+        override fun startScroll(startX: Int, startY: Int, dx: Int, dy: Int, duration: Int) {
+            super.startScroll(startX, startY, dx, dy, mDuration)
+        }
+
+        override fun startScroll(startX: Int, startY: Int, dx: Int, dy: Int) {
+            super.startScroll(startX, startY, dx, dy, mDuration)
+        }
+
+        init {
+            mDuration = duration
+        }
     }
 
     interface OnBannerItemClickListener {

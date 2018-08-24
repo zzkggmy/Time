@@ -5,13 +5,13 @@ import com.kai.time.R
 import com.kai.time.base.BaseActivity
 import com.kai.time.fragment.AllFragment
 import com.kai.time.fragment.FollowFragment
-import com.kai.time.fragment.OneFragment
+import com.kai.time.fragment.MovieFragment
 import com.kai.time.utils.findColor
-import kotlinx.android.synthetic.main.activity_one.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
 
-    private val oneFrag = OneFragment()
+    private val oneFrag = MovieFragment()
     private val allFrag = AllFragment()
     private val followFragment = FollowFragment()
     private val fragList: ArrayList<Fragment> = ArrayList()
@@ -22,7 +22,7 @@ class MainActivity : BaseActivity() {
         fragList.add(oneFrag)
         fragList.add(allFrag)
         fragList.add(followFragment)
-        ll_one.setOnClickListener { showFrag(0) }
+        ll_movie.setOnClickListener { showFrag(0) }
         ll_all.setOnClickListener { showFrag(1) }
         ll_follow.setOnClickListener { showFrag(2) }
     }
@@ -59,7 +59,7 @@ class MainActivity : BaseActivity() {
                 .commit()
     }
 
-    override fun bindLayout() = R.layout.activity_one
+    override fun bindLayout() = R.layout.activity_main
 
     override fun useTitleBar() = false
 }
