@@ -47,6 +47,7 @@ class DoubanDetailsActivity : BaseActivity() {
         commentList.add("精彩短评")
 //        vp_douban_details.adapter = DoubanCommentVpAdapter(supportFragmentManager,commentList)
 //        tal_douban_details.setupWithViewPager(vp_douban_details,true)
+        tl_douban_details.setNavigationOnClickListener { finish() }
         getDoubanDetails()
     }
 
