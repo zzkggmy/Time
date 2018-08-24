@@ -10,7 +10,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.kai.time.R
 import com.kai.time.adapter.DoubanActorAdapter
-import com.kai.time.adapter.DoubanCommentVpAdapter
+import com.kai.time.adapter.DoubanCommentAdapter
 import com.kai.time.adapter.DoubanVideoAdapter
 import com.kai.time.base.BaseActivity
 import com.kai.time.bean.DoubanDetailsBean
@@ -23,7 +23,7 @@ import kotlinx.coroutines.experimental.async
 
 class DoubanDetailsActivity : BaseActivity() {
 
-    private val commentList: ArrayList<String> = ArrayList()
+    private val commentList: ArrayList<DoubanDetailsBean.PopularComments> = ArrayList()
     private val videoList: ArrayList<DoubanDetailsBean.Trailers> = ArrayList()
     private var actorAdapter: DoubanActorAdapter? = null
     private val directors: ArrayList<DoubanDetailsBean.Directors> = ArrayList()
@@ -41,10 +41,11 @@ class DoubanDetailsActivity : BaseActivity() {
         rv_actor_douban_details.layoutManager = LinearLayoutManager(this).apply {
             orientation = LinearLayoutManager.HORIZONTAL
         }
+        rv_comment_douban_details.layoutManager = LinearLayoutManager(this)
         showLoading()
 //        iv_back_douban_details.setOnClickListener { finish() }
-        commentList.add("评论")
-        commentList.add("精彩短评")
+//        commentList.add("评论")
+//        commentList.add("精彩短评")
 //        vp_douban_details.adapter = DoubanCommentVpAdapter(supportFragmentManager,commentList)
 //        tal_douban_details.setupWithViewPager(vp_douban_details,true)
         tl_douban_details.setNavigationOnClickListener { finish() }
@@ -63,7 +64,8 @@ class DoubanDetailsActivity : BaseActivity() {
 
                 }
                 videoList.addAll(result.trailers)
-
+                commentList.addAll(result.popular_comments)
+                rv_comment_douban_details.adapter = DoubanCommentAdapter(commentList) { view, position -> }
                 rv_video_douban_details.adapter = DoubanVideoAdapter(videoList) { view, position ->
                 }
                 if (!result.has_video) {

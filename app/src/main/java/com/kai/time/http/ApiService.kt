@@ -36,4 +36,8 @@ interface ApiService {
     //获取豆瓣电影详情
     @GET("v2/movie/subject/{id}?apikey=0b2bdeda43b5688921839c8ecb20399b&city=%E5%8C%97%E4%BA%AC&client=&udid=")
     fun getDoubanDetails(@Path("id")id: String): Deferred<DoubanDetailsBean>
+
+    //获取图虫发现
+    @GET("discover-app")
+    fun getTcDiscover(): Deferred<TcDiscoverBean>
 }
