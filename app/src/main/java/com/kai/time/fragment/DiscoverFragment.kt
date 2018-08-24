@@ -34,15 +34,16 @@ class DiscoverFragment : Fragment() {
     private fun getDiscover(view: View?) {
         async(UI) {
             val result = Api.tcRetrofitService.getTcDiscover().await()
-            Log.d("sc",result.toString())
+
                 discover.addAll(result.categories)
                 banner.addAll(result.banners)
                 for (i in 0 until banner.size) {
-                    urls.add(banner[i].url)
+                    urls.add(banner[i].src)
+                    Log.d("sd", banner[i].url)
                 }
-                adapter = TcDiscoverAdapter { _, _ -> }
+            adapter = TcDiscoverAdapter(urls) { _, _ -> }
+            view!!.rv_discover_frag.adapter = adapter
                 adapter!!.setData(discover)
-                adapter!!.setBannerData(urls)
                 adapter!!.addBody(R.layout.discover_item)
                 adapter!!.addHeader(R.layout.discover_head_banner)
         }

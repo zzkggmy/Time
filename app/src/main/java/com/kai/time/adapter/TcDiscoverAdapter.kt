@@ -2,6 +2,7 @@ package com.kai.time.adapter
 
 import android.annotation.SuppressLint
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,10 +19,9 @@ import kotlinx.android.synthetic.main.discover_head_banner.view.*
 import kotlinx.android.synthetic.main.discover_item.view.*
 import kotlinx.android.synthetic.main.douban_body_item.view.*
 
-class TcDiscoverAdapter(val onClick: (view: View, position: Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TcDiscoverAdapter(val urls: ArrayList<String>,val onClick: (view: View, position: Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var data: ArrayList<TcDiscoverBean.Categories> = ArrayList()
-    private var urlData: ArrayList<String> = ArrayList()
     private var useHead = false
     private var useFoot = false
     private var headView: Int = 0
@@ -43,10 +43,6 @@ class TcDiscoverAdapter(val onClick: (view: View, position: Int) -> Unit) : Recy
 
     fun setData(datas: ArrayList<TcDiscoverBean.Categories>) {
         data = datas
-    }
-
-    fun setBannerData(urls: ArrayList<String>) {
-        urlData = urls
     }
 
     fun addHeader(headView: Int) {
@@ -113,7 +109,8 @@ class TcDiscoverAdapter(val onClick: (view: View, position: Int) -> Unit) : Recy
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (position == 0) {
-            holder.itemView.banner_discover_head.setView(urlData)
+            Log.d("sc",urls.toString())
+            holder.itemView.banner_discover_head.setView(urls)
             holder.itemView.banner_discover_head.setCyclerDuration(4000)
             holder.itemView.banner_discover_head.setAutoDisplay(true)
 
