@@ -36,6 +36,7 @@
 
 
             <android.support.v7.widget.Toolbar
+                app:navigationIcon="@mipmap/ic_arrow_back_white_18dp"
                 android:id="@+id/tl_douban_details"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
