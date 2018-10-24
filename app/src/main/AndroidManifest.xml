@@ -37,6 +37,9 @@
             android:name=".activity.DoubanDetailsActivity"
             android:label="豆瓣电影详情"
             android:theme="@style/AppTheme.Douban" />
+        <activity android:name=".activity.BannerActivity">
+
+        </activity>
     </application>
 
 </manifest>

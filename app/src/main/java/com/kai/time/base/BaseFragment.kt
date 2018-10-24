@@ -1,9 +1,9 @@
 package com.kai.time.base
 
-import android.os.Build
+import android.content.Context
 import android.os.Bundle
-import android.support.annotation.RequiresApi
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -13,62 +13,42 @@ import com.kai.time.utils.findColor
 import com.kai.time.view.LoadingProgress
 import com.kai.time.view.ToolBar
 
-
-abstract class BaseActivity : AppCompatActivity() {
-
-
+abstract class BaseFragment : Fragment() {
 
     private lateinit var linearLayout: LinearLayout
     private lateinit var loadingProgress: LoadingProgress
     private lateinit var toolBar: ToolBar
+    private lateinit var activity: Context
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        activity = context!!
+    }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        toolBar = ToolBar(this)
-        loadingProgress = LoadingProgress(this)
-        linearLayout = LinearLayout(this)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = View.inflate(activity, bindLayout(), null)
+        toolBar = ToolBar(activity)
+        loadingProgress = LoadingProgress(activity)
+        linearLayout = LinearLayout(activity)
         val params: ViewGroup.LayoutParams = ViewGroup.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         toolBar.fitsSystemWindows = true
         linearLayout.orientation = LinearLayout.VERTICAL
         linearLayout.addView(toolBar, params)
-        setContentView(bindLayout())
-        StatusBarUtil.setColor(toolBar,this, findColor(R.color.zhihu_primary))
-        setLeftImage(R.drawable.ic_back,30,30)
-        setTitleBarLeftClick { finish() }
-        initView()
+        initView(view)
+        StatusBarUtil.setColor(toolBar, getActivity()!!, findColor(R.color.zhihu_primary))
+        setLeftImage(R.drawable.ic_back, 30, 30)
+        return view
     }
 
-
-    abstract fun bindLayout(): Int
-
-
-    abstract fun initView()
-
-    protected open fun useTitleBar(): Boolean = true
-
-    override fun setContentView(view: View?) = if (useTitleBar()) {
-        linearLayout.addView(view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-        super.setContentView(linearLayout)
-    } else {
-        super.setContentView(view)
+    override fun onStart() {
+        super.onStart()
     }
 
-    override fun setContentView(layoutResID: Int) = if (useTitleBar()) {
-        val view = layoutInflater.inflate(layoutResID, linearLayout, false)
-        linearLayout.addView(view, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-        super.setContentView(linearLayout)
-    } else {
-        super.setContentView(layoutResID)
-    }
+    protected abstract fun initWidget(view: View)
 
-    override fun setContentView(view: View?, params: ViewGroup.LayoutParams?) = if (useTitleBar()) {
-        linearLayout.addView(view, params)
-        super.setContentView(linearLayout)
-    } else {
-        super.setContentView(view, params)
-    }
+    abstract fun initView(view: View)
+
+    protected abstract fun bindLayout(): Int
+
 
     fun setTitleBarBackgroundColor(themeColor: Int) = toolBar.setBackgroundColor(themeColor)
 
@@ -106,4 +86,5 @@ abstract class BaseActivity : AppCompatActivity() {
         }
         return statusBarHeight
     }
+
 }

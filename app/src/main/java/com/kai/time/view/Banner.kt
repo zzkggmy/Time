@@ -7,6 +7,7 @@ import android.os.Message
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,6 @@ import com.kai.time.utils.findColor
 class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, attr) {
 
 
-    private var imageHeight = 0
     private var currentId = 1
     private var cyclerDuration = 2000L
     private var indicatorBackground = R.drawable.bg_grey_dots_shape
@@ -35,10 +35,6 @@ class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, att
     private lateinit var relativeLayout: RelativeLayout
     private lateinit var title: TextView
     private var mOnBannerItemClickListener: OnBannerItemClickListener? = null
-
-    init {
-
-    }
 
     private val mHandler = @SuppressLint("HandlerLeak")
     object : Handler() {
@@ -90,13 +86,12 @@ class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, att
         title.setTextColor(findColor(textColor))
         title.textSize = textSize
         val dotsParams = LinearLayout.LayoutParams(20, 20)
+        dotsParams.gravity = Gravity.CENTER
         dotsParams.setMargins(0, 0, 40, 0)
-
         val linearParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
         linearParams.setMargins(15, 0, 15, 0)
         linearParams.addRule(RelativeLayout.ALIGN_PARENT_END)
         linearParams.addRule(RelativeLayout.CENTER_VERTICAL)
-
         val titleParam = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
         titleParam.setMargins(15, 0, 15, 30)
         titleParam.addRule(RelativeLayout.CENTER_VERTICAL)
@@ -125,7 +120,6 @@ class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, att
         vp.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
             }
-
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
                 dotsList[dotsList.size - 1].visibility = View.GONE
                 views[dotsList.size - 1].visibility = View.GONE
@@ -157,12 +151,10 @@ class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, att
                 }
             }
         })
-
     }
 
     private fun setIndicator() {
         val dotsList: ArrayList<TextView> = ArrayList()
-
         dotsLinearLayout = LinearLayout(context)
         val params = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
         params.addRule(RelativeLayout.CENTER_HORIZONTAL)
@@ -171,6 +163,7 @@ class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, att
         addView(dotsLinearLayout, params)
         val dotsParams = LinearLayout.LayoutParams(20, 20)
         dotsParams.setMargins(0, 0, 40, 0)
+        dotsParams.gravity = Gravity.CENTER
         for (i in 0 until size) {
             val dots = TextView(context)
             dots.setBackgroundResource(indicatorBackground)
@@ -195,7 +188,6 @@ class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, att
                         dotsList[index].setBackgroundResource(indicatorBackground)
                     }
                 }
-
             }
 
             override fun onPageSelected(position: Int) {
@@ -212,7 +204,6 @@ class Banner(context: Context, attr: AttributeSet) : RelativeLayout(context, att
                     }
                 }
             }
-
             override fun onPageScrollStateChanged(state: Int) {
             }
         })
